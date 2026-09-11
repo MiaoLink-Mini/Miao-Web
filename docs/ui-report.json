@@ -1,0 +1,123 @@
+{
+  "mode": "offline-in-memory",
+  "webgl_tested": false,
+  "checks": [
+    {
+      "name": "Nonblank page / one primary heading",
+      "status": "pass",
+      "details": null
+    },
+    {
+      "name": "Dependency failure preserves static scene",
+      "status": "pass",
+      "details": "Intentional dependency failure; no Three.js mock and no successful WebGL rendering claim"
+    },
+    {
+      "name": "All three agent labels / selected state",
+      "status": "pass",
+      "details": null
+    },
+    {
+      "name": "Four workspace views / keyboard / source images",
+      "status": "pass",
+      "details": null
+    },
+    {
+      "name": "All seven original screenshots / dialog / focus restoration",
+      "status": "pass",
+      "details": null
+    },
+    {
+      "name": "Local approval allow / reject / reset",
+      "status": "pass",
+      "details": null
+    },
+    {
+      "name": "Setup guide / clipboard feedback / Escape",
+      "status": "pass",
+      "details": {
+        "copy_feedback": "命令已复制。执行前请先完成配置。",
+        "clipboard_success_not_assumed": true
+      }
+    },
+    {
+      "name": "Five FAQ sections / native accordion",
+      "status": "pass",
+      "details": null
+    },
+    {
+      "name": "Seven responsive widths / no horizontal overflow",
+      "status": "pass",
+      "details": [
+        {
+          "width": 320,
+          "scrollWidth": 320,
+          "clientWidth": 320
+        },
+        {
+          "width": 390,
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        {
+          "width": 640,
+          "scrollWidth": 640,
+          "clientWidth": 640
+        },
+        {
+          "width": 768,
+          "scrollWidth": 768,
+          "clientWidth": 768
+        },
+        {
+          "width": 1024,
+          "scrollWidth": 1024,
+          "clientWidth": 1024
+        },
+        {
+          "width": 1440,
+          "scrollWidth": 1440,
+          "clientWidth": 1440
+        },
+        {
+          "width": 1920,
+          "scrollWidth": 1920,
+          "clientWidth": 1920
+        }
+      ]
+    },
+    {
+      "name": "Mobile menu / Escape / section navigation",
+      "status": "pass",
+      "details": null
+    },
+    {
+      "name": "No uncaught UI JavaScript errors",
+      "status": "pass",
+      "details": null
+    },
+    {
+      "name": "No UI console errors",
+      "status": "pass",
+      "details": null
+    },
+    {
+      "name": "Reduced-motion content remains visible",
+      "status": "pass",
+      "details": null
+    },
+    {
+      "name": "No-JavaScript content and FAQ remain readable",
+      "status": "pass",
+      "details": null
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [],
+  "console_warnings": [
+    "[WeAgent scene] Static fallback: Offline verification intentionally omits Three.js"
+  ],
+  "browser": "144.0.7559.96",
+  "passed": 14,
+  "failed": 0
+}

@@ -1,0 +1,119 @@
+{
+  "test": "Python HTTP client against supplied Node preview server; not browser navigation",
+  "results": [
+    {
+      "path": "/",
+      "status": 200,
+      "bytes": 28593,
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "/app.js",
+      "status": 200,
+      "bytes": 14089,
+      "content_type": "text/javascript; charset=utf-8"
+    },
+    {
+      "path": "/assets/agents/claude.svg",
+      "status": 200,
+      "bytes": 2558,
+      "content_type": "image/svg+xml"
+    },
+    {
+      "path": "/assets/agents/codex.svg",
+      "status": 200,
+      "bytes": 1329,
+      "content_type": "image/svg+xml"
+    },
+    {
+      "path": "/assets/agents/generic.svg",
+      "status": 200,
+      "bytes": 264,
+      "content_type": "image/svg+xml"
+    },
+    {
+      "path": "/assets/agents/pi.svg",
+      "status": 200,
+      "bytes": 477,
+      "content_type": "image/svg+xml"
+    },
+    {
+      "path": "/assets/mark.svg",
+      "status": 200,
+      "bytes": 371,
+      "content_type": "image/svg+xml"
+    },
+    {
+      "path": "/assets/shots/home.png",
+      "status": 200,
+      "bytes": 109795,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/assets/shots/inbox.png",
+      "status": 200,
+      "bytes": 121073,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/assets/shots/login.png",
+      "status": 200,
+      "bytes": 84961,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/assets/shots/me.png",
+      "status": 200,
+      "bytes": 81084,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/assets/shots/request.png",
+      "status": 200,
+      "bytes": 104026,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/assets/shots/session.png",
+      "status": 200,
+      "bytes": 139630,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/assets/shots/sessions.png",
+      "status": 200,
+      "bytes": 120943,
+      "content_type": "image/png"
+    },
+    {
+      "path": "/src/scene.js",
+      "status": 200,
+      "bytes": 22897,
+      "content_type": "text/javascript; charset=utf-8"
+    },
+    {
+      "path": "/styles.css",
+      "status": 200,
+      "bytes": 60973,
+      "content_type": "text/css; charset=utf-8"
+    },
+    {
+      "path": "/vendor/three-loader.js",
+      "status": 200,
+      "bytes": 164,
+      "content_type": "text/javascript; charset=utf-8"
+    },
+    {
+      "path": "/not-a-real-resource",
+      "status": 404
+    },
+    {
+      "path": "/node_modules/three/package.json",
+      "status": 403
+    },
+    {
+      "path": "/%2e%2e/etc/passwd",
+      "status": 404
+    }
+  ]
+}

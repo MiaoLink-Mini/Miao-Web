@@ -1,0 +1,19 @@
+{
+  "name": "miaolian-web-orbital",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "喵连 static product page with a procedural Three.js orbital scene",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "vendor": "node scripts/vendor.mjs",
+    "check": "node --check app.js && node --check src/scene.js && node --check scripts/serve.mjs && node --check scripts/vendor.mjs && node --check src/resource-scope.js",
+    "test": "node --experimental-vm-modules --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "three": "0.185.1"
+  }
+}

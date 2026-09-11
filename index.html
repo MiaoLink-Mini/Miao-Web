@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#080b09">
+  <meta name="description" content="喵连 远程 Coding Agent 工作台。通过微信小程序，连接自己的开发机与 VPS，集中查看 Codex、Claude Code 与 Pi 的会话、审批和执行进度。">
+  <title>喵连 — 不在工位，也在掌控。</title>
+  <link rel="icon" href="assets/golink.png" type="image/png">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+  <script type="module" src="src/scene.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到主要内容</a>
+<svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+  <symbol id="i-diagonal" viewBox="0 0 24 24"><path d="M6 18 18 6M6 6h12v12"/></symbol>
+  <symbol id="i-terminal" viewBox="0 0 24 24"><path d="m6 8 4 4-4 4m7 0h5"/><rect x="2" y="3" width="20" height="18" rx="4"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-message" viewBox="0 0 24 24"><path d="M21 11a8 8 0 0 1-8 8H8l-5 3V7a4 4 0 0 1 4-4h6a8 8 0 0 1 8 8Z"/><path d="M8 8h7m-7 5h5"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 2 9 4v6c0 5-9 10-9 10S3 17 3 12V6l9-4Z"/><path d="m8 12 3 3 5-6"/></symbol>
+  <symbol id="i-activity" viewBox="0 0 24 24"><path d="M2 12h5l3-8 4 16 3-8h5"/></symbol>
+  <symbol id="i-device" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 10 5-10 5L2 8l10-5Zm-10 9 10 5 10-5M2 16l10 5 10-5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 6-6 6 6 6m8-12 6 6-6 6m-3-14-2 16"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="m10 14 4-4m-6 6-2 2a4.2 4.2 0 0 1-6-6l5-5a4.2 4.2 0 0 1 6 0m2 1 2-2a4.2 4.2 0 0 1 6 6l-5 5a4.2 4.2 0 0 1-6 0" transform="translate(1 0)"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M15 8V3H3v13h5"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 24 24"><path d="M9 3H3v6m12-6h6v6M3 15v6h6m12-6v6h-6"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7V5Z"/></symbol>
+</defs></svg>
+<div class="page-progress" aria-hidden="true"><i id="pageProgress"></i></div>
+
+<nav class="globalnav" id="globalnav" aria-label="主导航">
+  <div class="nav-inner">
+    <a href="#overview" class="brand" aria-label="喵连 首页"><span class="brand-mark"><img src="assets/golink.png" alt="" width="44" height="44"></span><span>喵连<span class="brand-period">.</span></span></a>
+    <div class="globalnav-links" id="navLinks">
+      <a href="#features">工作台</a><a href="#timeline">功能</a><a href="#themes">主题色</a><a href="#sharing">分享</a><a href="#tech">架构</a><a href="#security">安全</a><a href="#faq">FAQ</a>
+    </div>
+    <div class="nav-actions"><span class="version-label mono">PREVIEW</span><button class="nav-cta" data-open-guide>开始连接<svg class="icon"><use href="#i-diagonal"/></svg></button><button class="nav-burger" id="navBurger" aria-label="打开菜单" aria-controls="navLinks" aria-expanded="false"><span></span><span></span></button></div>
+  </div>
+</nav>
+
+<header class="hero" id="overview">
+  <div class="hero-grid shell">
+    <div class="hero-copy">
+      <a class="release-pill" href="#features"><span class="status-dot"></span><span>你的 Agent，不必随身。掌控可以。</span><svg class="icon"><use href="#i-arrow"/></svg></a>
+      <p class="hero-kicker mono">YOUR AGENTS. WITHIN REACH.</p>
+      <h1>不在工位。<br>也在<span class="accent">掌控。</span></h1>
+      <p class="hero-description">让 Agent 继续工作，让你自由离开。<br>在手机上查看进度、回复问题、处理审批，<br class="desktop-br">连接运行在自有开发机与 VPS 上的编程智能体。</p>
+      <div class="hero-actions"><a class="button button-primary" href="#features">探索工作台<svg class="icon"><use href="#i-diagonal"/></svg></a><button class="button button-ghost" data-open-guide><span class="play-dot"><svg class="icon"><use href="#i-play"/></svg></span>如何接入</button></div>
+      <div class="hero-assurance"><span><svg class="icon"><use href="#i-shield"/></svg>本机执行</span><span><svg class="icon"><use href="#i-link"/></svg>自有设备</span><span class="mono">BUILT FOR YOUR FLOW</span></div>
+    </div>
+    <div class="orbit-stage" id="orbitStage" aria-label="可交互的 Three.js Agent 轨道场景">
+      <div class="stage-grid" aria-hidden="true"></div>
+      <div class="stage-coordinate mono" aria-hidden="true">GOLINK / CONTROL PLANE<br><span>01 — ORBITAL VIEW</span></div>
+      <div class="orbit-fallback" id="orbitFallback" aria-hidden="true"><div class="fallback-halo"></div><div class="fallback-sphere"><i></i><i></i><i></i><i></i><i></i><span>G</span></div><i class="fallback-ring ring-a"></i><i class="fallback-ring ring-b"></i><i class="fallback-ring ring-c"></i><b class="fallback-star star-a"></b><b class="fallback-star star-b"></b><b class="fallback-star star-c"></b></div>
+      <div class="scene-mount" id="sceneMount" aria-hidden="true"></div>
+      <span class="orbit-cross cross-tl" aria-hidden="true">+</span><span class="orbit-cross cross-br" aria-hidden="true">+</span>
+      <button class="orbit-agent orbit-codex is-selected" data-orbit-agent="codex" aria-pressed="true"><img src="assets/agents/codex.svg" alt="" width="23" height="23"><span><b>Codex</b><small>APP SERVER</small></span><i></i></button>
+      <button class="orbit-agent orbit-claude" data-orbit-agent="claude" aria-pressed="false"><img src="assets/agents/claude.svg" alt="" width="24" height="24"><span><b>Claude Code</b><small>AGENT SDK</small></span><i></i></button>
+      <button class="orbit-agent orbit-pi" data-orbit-agent="pi" aria-pressed="false"><img src="assets/agents/pi.svg" alt="" width="21" height="21"><span><b>Pi</b><small>RPC + EXTENSION</small></span><i></i></button>
+      <div class="orbit-hud"><div class="hud-top"><span class="hud-diamond">◇</span><span class="mono">ONE GATEWAY. YOUR AGENTS.</span><span class="demo-tag">场景演示</span></div><div class="hud-line"><span id="orbitAgentName">Codex</span><span id="orbitAgentProtocol" class="mono">APP SERVER / JSON-RPC</span><svg class="icon"><use href="#i-arrow"/></svg></div><div class="hud-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="stage-bottom"><span class="mono" id="sceneStatus">INTERACTIVE ORBIT</span><button id="motionToggle" class="motion-toggle" aria-pressed="false" aria-label="暂停场景动画" disabled><svg class="icon"><use href="#i-pause"/></svg><span>动态</span></button></div>
+    </div>
+  </div>
+  <div class="adapter-rail shell"><div class="adapter-caption"><span class="mono">NATIVE CONNECTIONS</span><span>熟悉的 Agent，全新的距离。</span></div><div class="adapter-logos"><span><img src="assets/agents/codex.svg" alt="" width="25" height="25">Codex</span><span><img src="assets/agents/claude.svg" alt="" width="27" height="27">Claude Code</span><span><img src="assets/agents/pi.svg" alt="" width="23" height="23">Pi</span></div><a href="#tech" class="adapter-more">统一协议，独立适配<svg class="icon"><use href="#i-diagonal"/></svg></a></div>
+  <a class="scroll-cue mono" href="#features"><span></span>SCROLL TO EXPLORE</a>
+</header>
+
+<main id="main">
+<section class="workspace-section section-space" id="features">
+  <div class="shell">
+    <div class="section-top reveal"><p class="section-label mono"><span>01</span> THE WORKSPACE</p><span class="section-side mono">LESS WATCHING. MORE DOINM.</span></div>
+    <div class="section-heading reveal"><h2>所有进展，一眼之间。<br><span class="muted">所有决定，一触即达。</span></h2><p>不是把 IDE 缩小到手机。<br>而是把真正需要你的时刻，<br>带到你手边。</p></div>
+    <div class="workspace-panel reveal">
+      <div class="workspace-toolbar"><div class="workspace-tabs" role="tablist" aria-label="工作台页面"><button id="tab-home" role="tab" aria-selected="true" aria-controls="workspaceView" data-view="home" tabindex="0"><svg class="icon"><use href="#i-grid"/></svg>总览</button><button id="tab-sessions" role="tab" aria-selected="false" aria-controls="workspaceView" data-view="sessions" tabindex="-1"><svg class="icon"><use href="#i-message"/></svg>会话</button><button id="tab-request" role="tab" aria-selected="false" aria-controls="workspaceView" data-view="request" tabindex="-1"><svg class="icon"><use href="#i-shield"/></svg>审批</button><button id="tab-session" role="tab" aria-selected="false" aria-controls="workspaceView" data-view="session" tabindex="-1"><svg class="icon"><use href="#i-activity"/></svg>Coding</button></div><span class="real-shot-label"><i></i>当前界面预览</span></div>
+      <div class="workspace-content" id="workspaceView" role="tabpanel" aria-labelledby="tab-home" tabindex="0">
+        <div class="workspace-copy"><span class="workspace-number mono" id="viewNumber">01 / OVERVIEW</span><h3 id="viewTitle">打开，就是全局。</h3><p id="viewDescription">设备是否在线，任务跑到哪里，还有什么需要你决定。一个工作台，把分散的进展重新聚拢。</p><div class="workspace-benefits" id="viewBenefits"><span><svg class="icon"><use href="#i-check"/></svg>设备与会话，集中查看</span><span><svg class="icon"><use href="#i-check"/></svg>待处理事项，不再遗漏</span><span><svg class="icon"><use href="#i-check"/></svg>从进度直接进入下一步</span></div><button class="text-button" id="openGallery">浏览全部页面<svg class="icon"><use href="#i-diagonal"/></svg></button><p class="workspace-note">基于当前 WXML / WXSS 离线渲染，使用虚构演示数据。非微信真机截图。</p></div>
+        <div class="workspace-visual"><div class="visual-rings" aria-hidden="true"><i></i><i></i><i></i></div><span class="visual-wordmark" aria-hidden="true">M.</span><div class="screenshot-float"><span class="float-icon"><svg class="icon"><use href="#i-link"/></svg></span><span>你的设备，你的工作流<small>LOCAL AGENT · REMOTE CONTROL</small></span></div><button class="phone-frame" id="phonePreview" aria-label="放大工作台总览截图"><img id="workspaceShot" src="assets/shots/home.png" width="780" height="1688" alt="喵连 小程序工作台总览，展示设备、会话与待处理事项" loading="lazy"><span class="phone-zoom"><svg class="icon"><use href="#i-expand"/></svg></span></button><div class="visual-caption mono"><span>WECHAT MINI PROGRAM</span><span>SOURCE UI PREVIEW ↗</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="capabilities-section section-space" id="timeline">
+  <div class="shell">
+    <div class="section-top reveal"><p class="section-label mono"><span>02</span> DESIGNED FOR MOMENTUM</p><span class="section-side mono">STAY IN THE LOOP, NOT AT THE DESK.</span></div>
+    <div class="section-heading reveal"><h2>复杂留给系统。<br><span class="muted">从容留给你。</span></h2><p>从一句指令，到一次确认。<br>给远程工作流一个有序的入口。</p></div>
+    <div class="bento-grid">
+      <article class="feature-card card-approval reveal" data-spotlight><div class="card-heading"><span class="feature-icon"><svg class="icon"><use href="#i-shield"/></svg></span><span class="card-index mono">01 / APPROVALS</span></div><h3>关键一步，由你拍板。</h3><p>工具执行前需要确认？在手机端处理请求。<br>授权范围与选项，以实际 Agent 能力为准。</p><div class="approval-demo"><div class="approval-demo-head"><span class="approval-status" id="approvalStatus"><i></i>等待你的决定</span><span class="demo-tag">本地交互演示</span></div><div class="approval-request"><img src="assets/agents/codex.svg" width="25" height="25" alt="Codex"><div><b>允许更新会话列表样式？</b><small>演示请求 · 不会执行任何远程操作</small></div></div><div class="approval-actions" id="approvalActions"><button class="approve-button" data-decision="allow"><svg class="icon"><use href="#i-check"/></svg>允许一次</button><button class="deny-button" data-decision="deny">拒绝</button></div><button id="resetApproval" class="reset-demo" hidden>重新体验 ↺</button><p class="sr-only" id="approvalLive" role="status"></p></div></article>
+      <article class="feature-card card-timeline reveal" data-spotlight><div class="card-heading"><span class="feature-icon"><svg class="icon"><use href="#i-activity"/></svg></span><span class="card-index mono">02 / TIMELINE</span></div><h3>看过程，不只是结果。</h3><p>消息、工具、计划与用量，<br>汇入同一条清晰的时间线。</p><div class="mini-timeline" aria-label="事件类型示意"><div><i class="tl-dot"></i><span>发送任务</span><small>MESSAGE</small></div><div><i class="tl-dot"></i><span>工具调用</span><small>TOOL</small></div><div class="tl-active"><i class="tl-dot"></i><span>等待你的确认</span><small>APPROVAL</small></div><div><i class="tl-dot empty"></i><span>继续执行</span><small>RESULT</small></div></div></article>
+      <article class="feature-card card-devices reveal" data-spotlight><div class="card-heading"><span class="feature-icon"><svg class="icon"><use href="#i-device"/></svg></span><span class="card-index mono">03 / DEVICES</span></div><h3>距离，不是限制。</h3><p>连接自己的开发机与 VPS。<br>配对、设备状态与撤销，都有入口。</p><div class="device-art" aria-hidden="true"><div class="device-orbit"></div><div class="device-tile device-laptop"><svg class="icon"><use href="#i-device"/></svg></div><div class="device-tile device-gateway"><span>M.</span></div><div class="device-tile device-mobile"><svg class="icon"><use href="#i-terminal"/></svg></div><span class="device-line line-one"></span><span class="device-line line-two"></span></div></article>
+      <article class="feature-card card-diff reveal" data-spotlight><div class="card-heading"><span class="feature-icon"><svg class="icon"><use href="#i-code"/></svg></span><span class="card-index mono">04 / CHANGES</span></div><h3>每一处变化，都有脉络。</h3><p>在支持的适配器中查看文件差异。<br>目前 Codex 已提供文件变更事件。</p><div class="diff-art" aria-label="代码变更视觉示意"><div class="diff-art-head"><span><svg class="icon"><use href="#i-code"/></svg>文件变更</span><small>DIFF PREVIEW</small></div><div class="diff-code"><span>−</span><i style="--w:72%"></i></div><div class="diff-code add"><span>+</span><i style="--w:86%"></i></div><div class="diff-code add"><span>+</span><i style="--w:54%"></i></div><div class="diff-code neutral"><span>·</span><i style="--w:65%"></i></div></div></article>
+      <article class="feature-card card-reconnect reveal" data-spotlight><div class="card-heading"><span class="feature-icon"><svg class="icon"><use href="#i-link"/></svg></span><span class="card-index mono">05 / CONTINUITY</span></div><h3>短暂离线，重新接上。</h3><p>事件序号、缺口检测与重连补齐。<br>恢复的是事件，不是重新执行任务。</p><div class="reconnect-art" aria-hidden="true"><div class="signal-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="signal-label mono"><span>DISCONNECT</span><span>↗ RECONNECT</span></div></div></article>
+      <article class="feature-card card-controls reveal" data-spotlight><div class="card-heading"><span class="feature-icon"><svg class="icon"><use href="#i-layers"/></svg></span><span class="card-index mono">06 / CONTROL</span></div><h3>原生能力，清楚边界。</h3><p>模型目录、下一轮模型选择、取消。<br>只展示对应设备实际开放的能力。</p><div class="command-pills"><span><b>/</b> model</span><span><b>/</b> plan</span><span><b>/</b> compact</span></div><p class="card-footnote">命令面板按能力开放，不直接执行任意 CLI 字符串。</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="personal-section section-space" id="themes">
+  <div class="shell">
+    <div class="section-top reveal"><p class="section-label mono"><span>03</span> MAKE IT YOURS</p><span class="section-side mono">SAME WORKSPACE. YOUR PALETTE.</span></div>
+    <div class="personal-grid reveal">
+      <div class="personal-copy"><h2>工作台，也有<br><span class="muted">你的颜色。</span></h2><p>从纸白到墨黑，六种完整配色。消息、代码差异、状态与操作控件一起切换，不只是换一个背景。</p>
+        <div class="theme-options" role="group" aria-label="预览小程序主题色">
+<button type="button" data-theme-preview="ember" aria-pressed="true" style="--swatch:#edaa86"><i aria-hidden="true"></i>余烬</button>
+<button type="button" data-theme-preview="paper" aria-pressed="false" style="--swatch:#f7f5ef"><i aria-hidden="true"></i>纸白</button>
+<button type="button" data-theme-preview="ocean" aria-pressed="false" style="--swatch:#87d7d0"><i aria-hidden="true"></i>深海</button>
+<button type="button" data-theme-preview="iris" aria-pressed="false" style="--swatch:#c6acf4"><i aria-hidden="true"></i>鸢尾</button>
+<button type="button" data-theme-preview="forest" aria-pressed="false" style="--swatch:#c4dca0"><i aria-hidden="true"></i>苔绿</button>
+<button type="button" data-theme-preview="mono" aria-pressed="false" style="--swatch:#eeeecc"><i aria-hidden="true"></i>墨黑</button>
+</div><p id="themePreviewStatus" class="personal-note" role="status">余烬 · Ember</p><div class="personal-detail"><span>六套配色</span><span>动效可减弱或关闭</span><span>偏好保存在小程序本地</span></div></div>
+      <div class="personal-preview theme-preview"><img id="themePreviewImage" src="assets/shots/theme-ember.png" alt="余烬主题的会话页面源码预览" width="780" height="1688" loading="lazy"><span class="personal-caption mono">SOURCE UI · THEME PREVIEW</span></div>
+    </div>
+  </div>
+</section>
+<section class="personal-section section-space" id="sharing">
+  <div class="shell">
+    <div class="section-top reveal"><p class="section-label mono"><span>04</span> SHARE WITH INTENT</p><span class="section-side mono">A SESSION, NOT YOUR MACHINE.</span></div>
+    <div class="personal-grid sharing-grid reveal">
+      <div class="personal-preview"><button type="button" class="share-preview-button" data-open-shot="share" aria-label="放大会话分享页面"><img src="assets/shots/share.png" alt="会话分享页面，展示权限、有效期与分享记录" width="780" height="1688" loading="lazy"></button><span class="personal-caption mono">SOURCE UI · SESSION SHARING</span></div>
+      <div class="personal-copy"><h2>分享一个会话。<br><span class="muted">不交出整台设备。</span></h2><p>把需要一起看的进展分享给伙伴。只读查看，或在明确授权后协作；有效期和撤销入口，都留在你的掌控中。</p><div class="share-features"><article><span class="mono">01 / PERMISSION</span><h3>只读与协作，清楚分开。</h3><p>授权以单个会话为边界，不代表获得设备的所有访问权限。</p></article><article><span class="mono">02 / LIFETIME</span><h3>有期限，也能提前收回。</h3><p>查看现有分享记录，管理有效期并撤销不再需要的授权。</p></article><article><span class="mono">03 / VISIBILITY</span><h3>操作结果，不靠猜测。</h3><p>协作操作显示处理状态；实际可用能力以设备与服务端校验为准。</p></article></div><p class="personal-note">页面展示为隔离示例数据，不创建真实分享。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="architecture-section section-space" id="tech">
+  <div class="shell">
+    <div class="section-top reveal"><p class="section-label mono"><span>05</span> THE CONTROL PLANE</p><span class="section-side mono">SIMPLE CONNECTIONS. CLEAR BOUNDARIES.</span></div>
+    <div class="architecture-title reveal"><h2>一条连接。<br><span class="muted">贯穿你的工作流。</span></h2><p>Agent 继续运行在你的设备。<br>喵连 负责把指令送达，把进展带回。</p></div>
+    <div class="architecture-diagram reveal" aria-label="微信小程序通过 Go Gateway 连接本机 Node Daemon，再由适配器连接 Coding Agents">
+      <div class="arch-path" aria-hidden="true"><i></i><i></i></div>
+      <div class="arch-step"><span class="arch-index mono">01 / ANYWHERE</span><div class="arch-icon"><svg class="icon"><use href="#i-grid"/></svg></div><h3>你的手机</h3><p>微信小程序</p><span class="arch-tag mono">REST + WSS</span></div>
+      <div class="arch-step arch-core"><span class="arch-index mono">02 / RELAY</span><div class="arch-icon core-icon"><span>M.</span><i></i></div><h3>Go Gateway</h3><p>调度、事件、鉴权</p><span class="arch-tag mono">weagent/1</span></div>
+      <div class="arch-step"><span class="arch-index mono">03 / YOUR DEVICE</span><div class="arch-icon"><svg class="icon"><use href="#i-device"/></svg></div><h3>Node Daemon</h3><p>开发机 / VPS</p><span class="arch-tag mono">LOCAL ADAPTERS</span></div>
+      <div class="arch-step"><span class="arch-index mono">04 / EXECUTION</span><div class="arch-icon agent-icon-trio"><img src="assets/agents/codex.svg" alt="Codex" width="22" height="22"><img src="assets/agents/claude.svg" alt="Claude Code" width="23" height="23"><img src="assets/agents/pi.svg" alt="Pi" width="20" height="20"></div><h3>Coding Agents</h3><p>保留原生工作方式</p><span class="arch-tag mono">CODEX · CLAUDE · PI</span></div>
+    </div>
+    <div class="architecture-bottom reveal"><span><i class="status-dot"></i>原生适配：Codex / Pi / Claude Code</span><span>其他适配仍在规划 · Web 工作台尚未接入网关</span></div>
+  </div>
+</section>
+
+<section class="security-section section-space" id="security">
+  <div class="shell security-layout">
+    <div class="security-visual reveal" aria-hidden="true"><div class="security-grid"></div><div class="security-orbit"><i></i><i></i><i></i></div><div class="vault-card"><div class="vault-top mono"><span>GOLINK</span><svg class="icon"><use href="#i-diagonal"/></svg></div><div class="vault-chip"><svg class="icon"><use href="#i-shield"/></svg></div><div class="vault-lines"><span></span><span></span><span></span></div><div class="vault-bottom"><span>YOUR DEVICE.<br>YOUR CREDENTIALS.</span><svg class="icon"><use href="#i-terminal"/></svg></div></div><span class="vault-caption mono">CONTROL REMOTELY. EXECUTE LOCALLY.</span></div>
+    <div class="security-copy"><p class="section-label mono reveal"><span>06</span> PRIVATE BY DESIGN</p><h2 class="reveal">你的密钥。<br><span class="muted">留在你的设备。</span></h2><p class="security-description reveal">远程控制，不意味着交出本机认证。Node 使用 Agent 原有的本机认证，网关不保管 Agent API Key，也不代为执行 Shell。</p><div class="security-facts reveal"><div><svg class="icon"><use href="#i-shield"/></svg><span><b>认证留在本机</b><small>不读取或上传 Agent 认证文件</small></span></div><div><svg class="icon"><use href="#i-link"/></svg><span><b>远程连接使用 HTTPS / WSS</b><small>资源级鉴权与操作记录</small></span></div><div><svg class="icon"><use href="#i-code"/></svg><span><b>传输范围，如实说明</b><small>事件、工具结果与 Diff 中可能含代码片段</small></span></div></div><a href="#faq" class="text-button reveal">了解安全与能力边界<svg class="icon"><use href="#i-arrow"/></svg></a></div>
+  </div>
+</section>
+
+<section class="faq-section section-space" id="faq">
+  <div class="shell faq-layout"><div class="faq-heading reveal"><p class="section-label mono"><span>07</span> GOOD TO KNOW</p><h2>开始之前，<br><span class="muted">你可能想知道。</span></h2><p>关于连接、能力与隐私。</p><button class="text-button" data-open-guide>查看接入指南<svg class="icon"><use href="#i-diagonal"/></svg></button></div><div class="faq-list reveal">
+    <details class="faq"><summary><span>我的代码会经过网关吗？</span><svg class="icon"><use href="#i-plus"/></svg></summary><div class="faq-answer"><p>Agent 在你的设备运行，网关不直接读取你的主机目录，也不保管 Agent 认证文件。但消息、工具输出、Diff 与文件片段可能通过网关传输或持久化。因此不能把“不上传整个仓库”理解为“任何代码内容都不会经过网关”。</p></div></details>
+    <details class="faq"><summary><span>现在可以接入哪些 Agent？</span><svg class="icon"><use href="#i-plus"/></svg></summary><div class="faq-answer"><p>随附 Node 工程已实现 Codex App Server、Pi RPC 与显式扩展、Claude Code 官方 Agent SDK 的适配。功能按设备返回的能力开放，并非三个 Agent 的所有能力完全一致。DeepSeek Harness、OpenCode 与 Generic PTY 属于原页面的扩展规划，不在当前原生适配范围内。</p></div></details>
+    <details class="faq"><summary><span>这就是可远程操作的 Web 工作台吗？</span><svg class="icon"><use href="#i-plus"/></svg></summary><div class="faq-answer"><p>不是。本页是独立产品介绍页，3D 场景、切换页面和审批按钮均为本地演示，不连接 Gateway、不执行远程代码。真实控制入口在随附微信小程序工程中。正式小程序访问链接和发布二维码尚未提供，本页不会生成虚假入口。</p></div></details>
+    <details class="faq"><summary><span>断线重连会重新执行我的任务吗？</span><svg class="icon"><use href="#i-plus"/></svg></summary><div class="faq-answer"><p>连接中断时，通过事件序号和持久队列恢复未确认事件，而不是重复执行任务。但 Node Daemon 进程重启不会恢复原生执行：旧会话将关闭为只读，不确定的操作保留原状态，不能把网络重连与进程恢复混为一谈。</p></div></details>
+    <details class="faq"><summary><span>如何在自己的环境里开始？</span><svg class="icon"><use href="#i-plus"/></svg></summary><div class="faq-answer"><p>需要随附完整工程中的 Go Gateway、已安装并完成本机登录的 Agent，以及微信开发者工具。按各工程 README 配置并启动 Gateway 与 Node，再在小程序完成设备配对。当前项目验证不等于生产环境、真实微信登录及所有真实 Agent 场景已验收。</p><button class="text-button" data-open-guide>打开接入步骤<svg class="icon"><use href="#i-arrow"/></svg></button></div></details>
+  </div></div>
+</section>
+
+<section class="cta-section" id="download"><div class="cta-lines" aria-hidden="true"><i></i><i></i><i></i></div><div class="shell cta-content reveal"><p class="section-label mono">YOUR NEXT MOVE, FROM ANYWHERE.</p><h2>把工作台，<span class="accent">装进口袋。</span></h2><p>去走走，去生活。需要你决定的时候，再回来。</p><button class="button button-primary" data-open-guide>开始连接你的 Agent<svg class="icon"><use href="#i-diagonal"/></svg></button><span class="cta-note">自有设备 · 原生适配 · 清楚的能力边界</span></div></section>
+</main>
+
+<footer class="footer"><div class="shell"><div class="footer-main"><a href="#overview" class="brand"><span class="brand-mark"><img src="assets/golink.png" alt="" width="44" height="44"></span><span>喵连<span class="brand-period">.</span></span></a><p>Built for the freedom to step away.</p><div class="footer-links"><a href="#features">工作台</a><a href="#tech">技术架构</a><a href="#faq">常见问题</a><a href="#overview" aria-label="回到顶部"><svg class="icon"><use href="#i-diagonal"/></svg></a></div></div><div class="footer-bottom"><span>© 2026 喵连. 产品预览。</span><span>本页交互为本地演示 · 功能以实际发布为准</span><span class="mono">DESIGNED TO KEEP YOU IN CONTROL.</span></div></div></footer>
+
+<dialog class="guide-dialog" id="guideDialog" aria-labelledby="guideTitle"><button class="dialog-close" data-close-dialog aria-label="关闭接入指南"><svg class="icon"><use href="#i-close"/></svg></button><p class="section-label mono">GET CONNECTED</p><h2 id="guideTitle">从你的设备开始。</h2><p class="dialog-intro">在运行 Agent 的电脑上安装 喵连 Node，再用小程序配对。默认连接 agent.000.moe。</p><div class="guide-steps"><div><span>01</span><section><h3>准备本机环境</h3><p>安装 Node.js 24.1+ 与 npm，并安装、登录要使用的 Codex、Claude Code 或 Pi。无需自行部署 Gateway。</p></section></div><div><span>02</span><section><h3>一键安装应用层</h3><p>在终端运行以下命令，下载校验后进入交互式管理菜单：</p><div class="install-platforms" role="group" aria-label="选择安装平台"><button data-install-platform="posix" aria-pressed="true">Linux / macOS</button><button data-install-platform="windows" aria-pressed="false">Windows</button></div><div class="command-block"><pre id="nodeCommand">d=$(mktemp -d) &amp;&amp; curl -fsSL https://agent.000.moe/downloads/node/install.mjs -o &quot;$d/install.mjs&quot; &amp;&amp; node &quot;$d/install.mjs&quot;</pre><button id="copyCommand" aria-label="复制应用层安装命令"><svg class="icon"><use href="#i-copy"/></svg><span>复制</span></button></div><small>菜单支持安装/更新、卸载、重装、添加项目、删除项目授权、连接 Agent、重新生成配对码。输入编号后 Enter 确认；Agent 用方向键移动、空格多选。删除项目不删除文件，重装保留身份与历史。配对码重生成仅适用于未绑定设备；旧码到期前可能仍有效。</small></section></div><div><span>03</span><section><h3>打开 喵连，完成配对</h3><p>在小程序中选择连接设备，输入终端显示的短期配对码。配对后保留本机状态目录。</p></section></div></div><div class="guide-notice"><svg class="icon"><use href="#i-shield"/></svg><p>这里没有模型 API Key 输入框。不要把本机认证文件、配对日志或运行时数据库上传到本页面。</p></div><p id="copyStatus" role="status" class="copy-status"></p></dialog>
+
+<dialog class="gallery-dialog" id="galleryDialog" aria-labelledby="galleryTitle"><div class="gallery-header"><div><p class="section-label mono">SOURCE UI PREVIEW</p><h2 id="galleryTitle">工作台总览</h2></div><button class="dialog-close" data-close-dialog aria-label="关闭截图预览"><svg class="icon"><use href="#i-close"/></svg></button></div><div class="gallery-image-wrap"><img id="galleryImage" src="assets/shots/home.png" width="780" height="1688" alt="喵连 小程序工作台总览"></div><div class="gallery-nav" id="galleryNav" aria-label="截图选择"><button data-shot="home" aria-pressed="true">总览</button><button data-shot="sessions" aria-pressed="false">会话</button><button data-shot="session" aria-pressed="false">Coding</button><button data-shot="inbox" aria-pressed="false">待处理</button><button data-shot="request" aria-pressed="false">审批</button><button data-shot="login" aria-pressed="false">欢迎页</button><button data-shot="me" aria-pressed="false">我的</button><button data-shot="diff" aria-pressed="false">Diff</button><button data-shot="share" aria-pressed="false">分享</button></div><p class="gallery-note">当前小程序源码 · 离线渲染 · 非真机截图</p></dialog>
+<noscript><div class="noscript-note">JavaScript 已禁用。页面文字与界面预览仍可查看；切换与 3D 交互需要启用 JavaScript。接入方式请参阅随附 README。</div></noscript>
+</body>
+</html>
